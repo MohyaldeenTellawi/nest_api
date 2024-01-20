@@ -1,11 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { WrapDataInterceptor } from './common/interceptors/wrap-data/wrap-data.interceptor';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.useGlobalInterceptors(new WrapDataInterceptor());
-  await app.listen(3000);
+  const configService: ConfigService = app.get(ConfigService);
+  const port: number = configService.get<number>('PORT');
+
+  await app.listen(port);
 }
 bootstrap();

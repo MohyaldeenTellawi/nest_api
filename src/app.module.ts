@@ -1,51 +1,41 @@
 import {
   ClassSerializerInterceptor,
-  MiddlewareConsumer,
   Module,
-  NestModule,
-  RequestMethod,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UsersModule } from './users/users.module';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { CommonModule } from './common/common.module';
-import { LoggerMiddleware } from './common/middlewares/logger/logger.middleware';
-import { UsersController } from './users/users.controller';
+import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
+import { WrapDataInterceptor } from './common/interceptors/wrap-data/wrap-data.interceptor';
+import * as Joi from 'joi';
+import { DatabaseModule } from './databse/databse.module';
 
-import ormConfig from './config/orm.config';
-
-import ormConfigProd from './config/orm.config.prod';
-
+import { LoginModule } from './logins/logins.module';
 @Module({
-  // ConfigModule.forRoot() allow to access .env file data includes
-  //without this module can not access any variables in .env file
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ['.env'],
-      // ignoreEnvVars: true, this row to ignor all env files
-      isGlobal: true, //this row allow to use configModule as Global
-      load: [ormConfig, ormConfigProd],
-      expandVariables: true, // example in env file
+      isGlobal: true,
+      validationSchema: Joi.object({
+        PORT: Joi.number().required(),
+      }),
     }),
-    // TypeOrmModule.forRootAsync({
-    //   imports: [ConfigModule],
-    //   useFactory: ormConfig,
-    // }),
     UsersModule,
-    CommonModule,
+    LoginModule,
+    DatabaseModule,
   ],
   providers: [
-    { provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor },
+    {
+      provide: APP_PIPE,
+      useClass: ValidationPipe,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ClassSerializerInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: WrapDataInterceptor,
+    },
   ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(LoggerMiddleware)
-      .exclude(
-        { path: 'users/:id', method: RequestMethod.PATCH },
-        { path: 'users/:id', method: RequestMethod.DELETE },
-      )
-      .forRoutes(UsersController);
-  }
-}
+export class AppModule {}
