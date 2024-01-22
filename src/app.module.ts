@@ -10,7 +10,15 @@ import { WrapDataInterceptor } from './common/interceptors/wrap-data/wrap-data.i
 import * as Joi from 'joi';
 import { DatabaseModule } from './databse/databse.module';
 
-import { LoginModule } from './logins/logins.module';
+import { LoginModule } from './trade-login/logins.module';
+import {
+  AcceptLanguageResolver,
+  HeaderResolver,
+  I18nModule,
+  QueryResolver,
+} from 'nestjs-i18n';
+import * as path from 'path';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -18,6 +26,18 @@ import { LoginModule } from './logins/logins.module';
       validationSchema: Joi.object({
         PORT: Joi.number().required(),
       }),
+    }),
+    I18nModule.forRoot({
+      fallbackLanguage: 'en',
+      loaderOptions: {
+        path: path.join(__dirname, '/i18n/'),
+        watch: true,
+      },
+      resolvers: [
+        { use: QueryResolver, options: ['lang'] },
+        AcceptLanguageResolver,
+        new HeaderResolver(['x-lang']),
+      ],
     }),
     UsersModule,
     LoginModule,

@@ -5,9 +5,14 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+
+import { CustomI18nService } from 'src/common/shared/custom-i18n.service';
 @Injectable()
 export class UserServices {
-  constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private userRepo: Repository<User>,
+    private readonly i18n: CustomI18nService,
+  ) {}
 
   async findAllUser(): Promise<User[]> {
     return this.userRepo.find();
@@ -16,7 +21,8 @@ export class UserServices {
   async findUser(id: number): Promise<User> {
     const user = await this.userRepo.findOneBy({ id });
     if (!user) {
-      throw new NotFoundException('Not Found User');
+      // throw new NotFoundException('Not Found User');
+      throw new NotFoundException(this.i18n.translate('test.NOT_FOUND'));
     }
     return user;
   }

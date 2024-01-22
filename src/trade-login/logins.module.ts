@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { LoginService } from './logins.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Login } from './login.entity';
-import { LoginController } from './login.controller';
+import { ExistTradeLogin } from './exist-login.entity';
+import { LoginController } from './exist-login.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Login])],
+  imports: [TypeOrmModule.forFeature([ExistTradeLogin])],
   controllers: [LoginController],
   providers: [LoginService],
 })

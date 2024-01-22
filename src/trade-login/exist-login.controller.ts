@@ -13,9 +13,9 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { LoginService } from './logins.service';
-import { Login } from './login.entity';
+import { ExistTradeLogin } from './exist-login.entity';
 import { Puplic } from 'src/common/decoretors/roles.decorator';
-import { CreateLoginDto } from './dtos/create-login.dto';
+import { CreateLoginDto } from './dtos/exist-login.dto';
 import { CustomExceptionFilter } from 'src/common/filters/custom-exception/custom-exception.filter';
 @UseFilters(CustomExceptionFilter)
 @UsePipes(ValidationPipe)
@@ -25,17 +25,21 @@ export class LoginController {
 
   @Puplic()
   @Get()
-  async findAllUsers(): Promise<Login[]> {
+  async findAllUsers(): Promise<ExistTradeLogin[]> {
     return await this.loginServices.findAllLogins();
   }
   @Puplic()
   @Get(':id')
-  async findUser(@Param('id', ParseIntPipe) id: number): Promise<Login> {
+  async findUser(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ExistTradeLogin> {
     return await this.loginServices.findLogin(id);
   }
 
   @Post()
-  async creatNewUser(@Body() createLoginDto: CreateLoginDto): Promise<Login> {
+  async creatNewUser(
+    @Body() createLoginDto: CreateLoginDto,
+  ): Promise<ExistTradeLogin> {
     return await this.loginServices.createLogin(createLoginDto);
   }
 

@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 
 @Entity('logins')
-export class Login {
+export class ExistTradeLogin {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -24,7 +24,7 @@ export class Login {
   @Column()
   server: string;
 
-  @ManyToOne(() => User, (user) => user.logins)
+  @ManyToOne(() => User, (user) => user.logins, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 }

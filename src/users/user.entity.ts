@@ -1,4 +1,4 @@
-import { Login } from 'src/logins/login.entity';
+import { ExistTradeLogin } from 'src/trade-login/exist-login.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('users')
@@ -14,6 +14,6 @@ export class User {
   @Column()
   country: string;
 
-  @OneToMany(() => Login, (login) => login.user, { cascade: true })
-  logins?: Login[];
+  @OneToMany(() => ExistTradeLogin, (login) => login.user)
+  logins?: ExistTradeLogin[];
 }
